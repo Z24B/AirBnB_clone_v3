@@ -2,7 +2,7 @@
 from flask import Flask
 from os import getenv
 from models import storage
-from api.v1 import app_views
+from api.v1.views import app_views
 
 app = Flask(__name__)
 
