@@ -13,21 +13,28 @@ from models.review import Review
 from models.base_model import BaseModel
 
 
+classes = {
+        "amenities": Amenity,
+        "cities": City,
+        "places": Place,
+        "reviews": Review,
+        "states": State,
+        "users": User,
+        }
+
+
 @app_views.route('/status', methods=['GET'])
 def get_status():
     """Return the status of the API"""
     return jsonify(status="OK")
 
 
-@app_views.route('/stats', methods=['GET'])
-def get_stats():
+@app_views.route("/stats")
+def stats():
     """Retrieve the number of each objects by type"""
-    stats = {
-            "amenities": storage.count("Amenity"),
-            "cities": storage.count("City"),
-            "places": storage.count("Place"),
-            "reviews": storage.count("Review"),
-            "states": storage.count("State"),
-            "users": storage.count("User")
-            }
-    return jsonify(stats)
+    statistics = {}
+
+    for key, value in classes.items():
+        statistics[key] = storage.count(value)
+
+    return jsonify(statistics)
