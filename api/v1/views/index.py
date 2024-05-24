@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 """Indexing File"""
-
 from flask import jsonify
 from api.v1.views import app_views
 from models import storage
@@ -10,17 +9,6 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-from models.base_model import BaseModel
-
-
-classes = {
-        "amenities": Amenity,
-        "cities": City,
-        "places": Place,
-        "reviews": Review,
-        "states": State,
-        "users": User,
-        }
 
 
 @app_views.route('/status', methods=['GET'])
@@ -29,12 +17,14 @@ def get_status():
     return jsonify(status="OK")
 
 
-@app_views.route("/stats")
-def stats():
-    """Retrieve the number of each objects by type"""
-    statistics = {}
-
-    for key, value in classes.items():
-        statistics[key] = storage.count(value)
-
-    return jsonify(statistics)
+@app_views.route('/stats', strict_slashes=False)
+def count():
+    """
+    Retrieves the number of each objects by type
+    """
+    return jsonify({"amenities": storage.count("Amenity"),
+                    "cities": storage.count("City"),
+                    "places": storage.count("Place"),
+                    "reviews": storage.count("Review"),
+                    "states": storage.count("State"),
+                    "users": storage.count("User")})
