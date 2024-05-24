@@ -7,6 +7,7 @@ from models.state import State
 from models.city import City
 from api.v1.views import app_views
 
+
 # Route to retrieve all cities of a state
 @app_views.route('/states/<state_id>/cities', methods=['GET'])
 def get_state_cities(state_id):
@@ -17,6 +18,7 @@ def get_state_cities(state_id):
     cities = [city.to_dict() for city in state.cities]
     return jsonify(cities)
 
+
 # Route to retrieve a specific city
 @app_views.route('/cities/<city_id>', methods=['GET'])
 def get_city(city_id):
@@ -25,6 +27,7 @@ def get_city(city_id):
         abort(404)
 
     return jsonify(city.to_dict())
+
 
 # Route to delete a city
 @app_views.route('/cities/<city_id>', methods=['DELETE'])
@@ -36,6 +39,7 @@ def delete_city(city_id):
     storage.delete(city)
     storage.save()
     return jsonify({}), 200
+
 
 # Route to create a city
 @app_views.route('/states/<state_id>/cities', methods=['POST'])
@@ -56,6 +60,7 @@ def create_city(state_id):
     storage.new(city)
     storage.save()
     return jsonify(city.to_dict()), 201
+
 
 # Route to update a city
 @app_views.route('/cities/<city_id>', methods=['PUT'])
