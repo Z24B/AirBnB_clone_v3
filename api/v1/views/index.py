@@ -1,37 +1,42 @@
 #!/usr/bin/python3
-"""
-Flask route that returns json status response
-"""
+"""Indexing File"""
+from flask import jsonify
 from api.v1.views import app_views
-from flask import jsonify, request
 from models import storage
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
 
 
-@app_views.route('/status', methods=['GET'])
+classes = {
+    "amenities": Amenity,
+    "cities": City,
+    "places": Place,
+    "reviews": Review,
+    "states": State,
+    "users": User,
+}
+
+
+@app_views.route("/status")
 def status():
-    """
-    function for status route that returns the status
-    """
-    if request.method == 'GET':
-        resp = {"status": "OK"}
-        return jsonify(resp)
+    """Status of my API"""
+    return jsonify({"status": "OK"})
 
 
-@app_views.route('/stats', methods=['GET'])
+@app_views.route("/stats")
 def stats():
-    """
-    function to return the count of all class objects
-    """
-    if request.method == 'GET':
-        response = {}
-        PLURALS = {
-            "Amenity": "amenities",
-            "City": "cities",
-            "Place": "places",
-            "Review": "reviews",
-            "State": "states",
-            "User": "users"
-        }
-        for key, value in PLURALS.items():
-            response[value] = storage.count(key)
-        return jsonify(response)
+    """Retrieve the number of each objects by type"""
+    statistics = {}
+
+    for key, value in classes.items():
+        statistics[key] = storage.count(value)
+
+    return jsonify(statistics)
+
+
+if __name__ == "__main__":
+    pass
