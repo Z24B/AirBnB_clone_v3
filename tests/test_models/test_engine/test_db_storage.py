@@ -87,6 +87,7 @@ class TestFileStorage(unittest.TestCase):
     def test_save(self):
         """Test that save properly saves objects to file.json"""
 
+
 class TestGetCountMethods(unittest.TestCase):
     def test_count_all(self):
         """Test counting all objects"""
@@ -100,6 +101,28 @@ class TestGetCountMethods(unittest.TestCase):
         """Test retrieving one object"""
         state_id = list(storage.all(State).keys())[0]
         self.assertEqual(storage.get(State, state_id).id, state_id)
+
+
+class TestDBStorage(unittest.TestCase):
+    """Test cases for the DBStorage class"""
+
+    def test_get(self):
+        """Test the get method"""
+        state = State(name="California")
+        storage.new(state)
+        storage.save()
+        self.assertIs(storage.get(State, state.id), state)
+        self.assertIsNone(storage.get(State, "non_existent_id"))
+
+    def test_count(self):
+        """Test the count method"""
+        initial_count = storage.count()
+        state = State(name="California")
+        storage.new(state)
+        storage.save()
+        self.assertEqual(storage.count(), initial_count + 1)
+        self.assertEqual(storage.count(State), initial_count + 1)
+
 
 if __name__ == '__main__':
     unittest.main()
