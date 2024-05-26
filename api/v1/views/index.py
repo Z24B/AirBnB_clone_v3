@@ -11,23 +11,21 @@ from models.amenity import Amenity
 from models.review import Review
 
 
-@app_views.route('/status', methods=['GET'])
+@app_views.route('/status', methods=['GET'], strict_slashes=False)
 def get_status():
-    """Return the status of the API"""
-    return jsonify(status="OK")
+    """ Returns the status of the API """
+    return jsonify({"status": "OK"})
 
 
-@app_views.route('/stats', strict_slashes=False)
-def count():
-    """
-    Retrieves the number of each objects by type
-    """
+@app_views.route('/stats', methods=['GET'], strict_slashes=False)
+def get_stats():
+    """ Retrieves the number of each objects by type """
     stats = {
-            'amenities': storage.count('Amenity'),
-            'cities': storage.count('City'),
-            'places': storage.count('Place'),
-            'reviews': storage.count('Review'),
-            'states': storage.count('State'),
-            'users': storage.count('User'),
-            }
+        "amenities": storage.count("Amenity"),
+        "cities": storage.count("City"),
+        "places": storage.count("Place"),
+        "reviews": storage.count("Review"),
+        "states": storage.count("State"),
+        "users": storage.count("User")
+    }
     return jsonify(stats)
