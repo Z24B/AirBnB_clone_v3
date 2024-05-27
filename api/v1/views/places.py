@@ -7,6 +7,54 @@ from models.city import City
 from models.place import Place
 from models.user import User
 
+app_views = Flask(__name__)
+
+
+@app_views.route('/places_search', methods=['POST'], strict_slashes=False)
+def search_places():
+    """Search for Place objects based on JSON request body."""
+    if not request.json:
+        abort(400, "Not a JSON")
+
+    search_data = request.get_json()
+    if not search_data:
+        return jsonify(
+                [place.to_dict() for place in storage.all(Place).values()])
+
+    states = search_data.get('states', [])
+    cities = search_data.get('cities', [])
+    amenities = search_data.get('amenities', [])
+
+    places = set()
+
+    if states:
+        for state_id in states:
+            state = storage.get(State, state_id)
+            if state:
+                for city in state.cities:
+                    for place in city.places:
+                        places.add(place)
+
+    if cities:
+        for city_id in cities:
+            city = storage.get(City, city_id)
+            if city:
+                for place in city.places:
+                    places.add(place)
+
+    if not states and not cities:
+        places = set(storage.all(Place).values())
+
+    if amenities:
+        filtered_places = set()
+        for place in places:
+            place_amenities = {amenity.id for amenity in place.amenities}
+            if all(amenity_id in place_amenities for amenity_id in amenities):
+                filtered_places.add(place)
+        places = filtered_places
+
+    return jsonify([place.to_dict() for place in places])
+
 
 @app_views.route(
         '/cities/<city_id>/places', methods=['GET'], strict_slashes=False)
